@@ -159,6 +159,10 @@ class Zombie:
             return BehaviorTree.FAIL
 
     def boy_ball_compare(self):
+        if common.boy.ball_count > self.ball_count:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
 
 
 
