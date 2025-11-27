@@ -114,10 +114,10 @@ class Zombie:
         self.x -= distance * math.cos(self.dir)
         self.y -= distance * math.sin(self.dir)
 
-    def move_escape(self, tx,ty):
+    def move_escape(self, r=0.5):
         self.state = 'Walk'  # 디버그 출력
-        self.move_little_escape(self.tx, self.ty)  # 목적지로 조금 이동
-        if self.distance_less_than(self.tx, self.ty, self.x, self.y, r):
+        self.move_little_escape(common.boy.x, common.boy.y)  # 목적지로 조금 이동
+        if self.distance_less_than(self.x, self.y, common.boy.x, common.boy.y, r):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
@@ -209,7 +209,7 @@ class Zombie:
         escape_boy_if_nearby=Sequence('소년이 근처에 있으면 도망',c1,c3,a6)
 
 
-        root=dtd=Selector('추적 또는 도망 또는 배회',chase_boy_if_nearby,wander)
+        root=dtd=Selector('추적 또는 도망 또는 배회',chase_boy_if_nearby,escape_boy_if_nearby,wander)
 
 
         self.bt = BehaviorTree(root)
