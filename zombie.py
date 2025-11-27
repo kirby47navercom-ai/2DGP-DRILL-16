@@ -106,6 +106,12 @@ class Zombie:
         self.x += distance * math.cos(self.dir)
         self.y += distance * math.sin(self.dir)
 
+    def move_escape(self, tx,ty):
+        self.dir = math.atan2(ty - self.y, tx - self.x)
+        distance = RUN_SPEED_PPS * game_framework.frame_time
+        self.x -= distance * math.cos(self.dir)
+        self.y -= distance * math.sin(self.dir)
+
 
 
     def move_to(self, r=0.5):
