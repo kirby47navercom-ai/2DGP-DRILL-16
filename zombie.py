@@ -106,11 +106,21 @@ class Zombie:
         self.x += distance * math.cos(self.dir)
         self.y += distance * math.sin(self.dir)
 
-    def move_escape(self, tx,ty):
+
+
+    def move_little_escape(self, tx,ty):
         self.dir = math.atan2(ty - self.y, tx - self.x)
         distance = RUN_SPEED_PPS * game_framework.frame_time
         self.x -= distance * math.cos(self.dir)
         self.y -= distance * math.sin(self.dir)
+
+    def move_escape(self, tx,ty):
+        self.state = 'Walk'  # 디버그 출력
+        self.move_little_escape(self.tx, self.ty)  # 목적지로 조금 이동
+        if self.distance_less_than(self.tx, self.ty, self.x, self.y, r):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
 
 
 
