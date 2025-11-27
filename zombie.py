@@ -204,7 +204,9 @@ class Zombie:
         a5= Action('다음 순찰 위치 획득',self.get_patrol_location)
         patrol=Sequence('순찰',a5,a2)
 
-
+        c3 = Condition('좀비의 공 개수가 소년의 공개수보다 적은가', self.boy_ball_compare)
+        a6 = Action('도망' ,self.move_escape)
+        escape_boy_if_nearby=Sequence('소년이 근처에 있으면 도망',c1,c3,a6)
 
 
         root=dtd=Selector('추적 또는 도망 또는 배회',chase_boy_if_nearby,wander)
