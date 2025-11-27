@@ -5,6 +5,7 @@ import math
 import game_framework
 import game_world
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
+import common
 
 
 # zombie Run Speed
@@ -47,6 +48,8 @@ class Zombie:
 
         self.tx, self.ty = 1000, 1000
         # 여기를 채우시오.
+        self.patrol_points=[(43, 274), (1118, 274), (1050, 494), (575, 804), (235, 991), (575, 804), (1050, 494),(1118, 274)]
+        self.loc_no = 0
 
         self.build_behavior_tree()
 
@@ -71,6 +74,7 @@ class Zombie:
 
 
         draw_rectangle(*self.get_bb())
+        draw_circle(self.x, self.y,int(PIXEL_PER_METER*7),255,255,0)
 
     def handle_event(self, event):
         pass
@@ -120,16 +124,32 @@ class Zombie:
 
     def is_boy_nearby(self, distance):
         # 여기를 채우시오.
+        if self.distance_less_than(self.x, self.y, common.boy.x, common.boy.y, distance):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
         pass
 
 
     def move_to_boy(self, r=0.5):
         # 여기를 채우시오.
+        self.state = 'Walk'
+        # 소년 쪽으로 살짝 이동
+        self.move_little_to(common.boy.x, common.boy.y)
+        # 좀비가 소년에게 도착했는지 검사
+        if self.distance_less_than(self.x, self.y, common.boy.x, common.boy.y, r):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING #아직 소년한테 가지 않음
+
         pass
 
 
-    def get_patrol_location(self):
+    def get_patrol_location(self):#다음 순찰 위치 획득
         # 여기를 채우시오.
+        self.tx, self.ty = self.patrol_points[self.loc_no]
+        self.loc_no = (self.loc_no + 1) % len(self.patrol_points)
+        return BehaviorTree.SUCCESS
         pass
 
 
@@ -141,5 +161,18 @@ class Zombie:
         move_to_target_location = Sequence('Move To Target Location', a1, a2)
         a3 = Action('Set Random Location', self.set_random_location)
 
-        root = wander = Sequence('Wander', a3, a2)
+        wander = Sequence('Wander', a3, a2)
+
+        c1=Condition('소년이 근처에 있는가', self.is_boy_nearby,7)
+        a4=Action('소년 추적',self.move_to_boy)
+        chase_boy_if_nearby=Sequence('소년이 근처에 있으면 추척',c1,a4)
+
+        chase_or_wander=Selector('추적 아니면 배회',chase_boy_if_nearby,wander)
+
+        a5= Action('다음 순찰 위치 획득',self.get_patrol_location)
+        patrol=Sequence('순찰',a5,a2)
+
+        root=dtd=Selector('추적 또는 순찰',chase_or_wander,patrol)
+
+
         self.bt = BehaviorTree(root)
