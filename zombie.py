@@ -172,7 +172,10 @@ class Zombie:
         a5= Action('다음 순찰 위치 획득',self.get_patrol_location)
         patrol=Sequence('순찰',a5,a2)
 
-        root=dtd=Selector('추적 또는 순찰',chase_or_wander,patrol)
+
+
+
+        root=dtd=Selector('추적 또는 도망 또는 배회',chase_boy_if_nearby,????,wander)
 
 
         self.bt = BehaviorTree(root)
