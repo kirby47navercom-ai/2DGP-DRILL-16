@@ -152,6 +152,15 @@ class Zombie:
         return BehaviorTree.SUCCESS
         pass
 
+    def zombie_ball_compare(self):
+        if self.ball_count > common.boy.ball_count:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def boy_ball_compare(self):
+
+
 
     def build_behavior_tree(self):
         # 목표 지점을 (1000, 1000) 설정하는 액션 노드를 생성.
@@ -163,9 +172,12 @@ class Zombie:
 
         wander = Sequence('Wander', a3, a2)
 
+
+
         c1=Condition('소년이 근처에 있는가', self.is_boy_nearby,7)
+        c2=Condition('좀비의 공 개수가 소년의 공개수보다 많은가', self.zombie_ball_compare)
         a4=Action('소년 추적',self.move_to_boy)
-        chase_boy_if_nearby=Sequence('소년이 근처에 있으면 추척',c1,a4)
+        chase_boy_if_nearby=Sequence('소년이 근처에 있으면 추척',c1,c2,a4)
 
         chase_or_wander=Selector('추적 아니면 배회',chase_boy_if_nearby,wander)
 
@@ -175,7 +187,7 @@ class Zombie:
 
 
 
-        root=dtd=Selector('추적 또는 도망 또는 배회',chase_boy_if_nearby,????,wander)
+        root=dtd=Selector('추적 또는 도망 또는 배회',chase_boy_if_nearby,wander)
 
 
         self.bt = BehaviorTree(root)
